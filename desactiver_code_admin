@@ -1,0 +1,210 @@
+<?php
+
+session_start();
+
+require_once("../database.php");
+
+
+// ======================================
+// Vérifier connexion administrateur
+// ======================================
+
+if(!isset($_SESSION['id']) || $_SESSION['role']!="Admin"){
+
+    header("Location: ../login_public.php");
+    exit();
+
+}
+
+
+
+// ======================================
+// Vérifier Administrateur principal
+// ======================================
+
+
+$sql_admin = "
+
+SELECT fonction
+
+FROM utilisateur
+
+WHERE id=$1
+
+AND role='Admin'
+
+";
+
+
+$result_admin = pg_query_params(
+
+    $conn,
+
+    $sql_admin,
+
+    array($_SESSION['id'])
+
+);
+
+
+
+$admin = pg_fetch_assoc($result_admin);
+
+
+
+if(!$admin || $admin['fonction']!="Administrateur principal"){
+
+
+    echo "<script>
+
+            alert('Action réservée à l\\'administrateur principal.');
+
+            window.location='codes_admin.php';
+
+          </script>";
+
+    exit();
+
+}
+
+
+
+
+// ======================================
+// Vérifier présence de l'identifiant
+// ======================================
+
+
+if(!isset($_GET['id'])){
+
+
+    header("Location: codes_admin.php");
+
+    exit();
+
+}
+
+
+
+$id = (int) $_GET['id'];
+
+
+
+
+// ======================================
+// Vérifier que le code existe
+// ======================================
+
+
+$sql = "
+
+SELECT id
+
+FROM code_admin
+
+WHERE id=$1
+
+";
+
+
+
+$resultat = pg_query_params(
+
+    $conn,
+
+    $sql,
+
+    array($id)
+
+);
+
+
+
+if(!$resultat || pg_num_rows($resultat)==0){
+
+
+    echo "<script>
+
+            alert('Code administrateur introuvable.');
+
+            window.location='codes_admin.php';
+
+          </script>";
+
+    exit();
+
+}
+
+
+
+
+// ======================================
+// Désactivation du code
+// ======================================
+
+
+$sql = "
+
+UPDATE code_admin
+
+SET actif = FALSE
+
+WHERE id=$1
+
+";
+
+
+
+$update = pg_query_params(
+
+    $conn,
+
+    $sql,
+
+    array($id)
+
+);
+
+
+
+
+
+// ======================================
+// Résultat
+// ======================================
+
+
+if($update){
+
+
+    echo "<script>
+
+            alert('Le code administrateur a été désactivé avec succès.');
+
+            window.location='codes_admin.php';
+
+          </script>";
+
+
+
+}else{
+
+
+    echo "<script>
+
+            alert('Erreur lors de la désactivation du code.');
+
+            window.location='codes_admin.php';
+
+          </script>";
+
+
+
+}
+
+
+
+exit();
+
+
+?>
