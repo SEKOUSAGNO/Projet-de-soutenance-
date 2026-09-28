@@ -1,27 +1,19 @@
 <?php
 
-// Connexion PostgreSQL
-// Sur Render : utilisation de DATABASE_URL
-// En local : utilisation de la base Projet-memoire
+$host = getenv('DB_HOST');
+$port = getenv('DB_PORT') ?: '5432';
+$dbname = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$password = getenv('DB_PASSWORD');
 
-if (getenv('DATABASE_URL')) {
+$conn = pg_connect(
+    "host=$host port=$port dbname=$dbname user=$user password=$password"
+);
 
-    // Connexion à PostgreSQL sur Render
-    $conn = pg_connect(getenv('DATABASE_URL'));
-
-} else {
-
-    // Connexion PostgreSQL en local
-    $conn = pg_connect(
-        "host=localhost " .
-        "port=5432 " .
-        "dbname=Projet-memoire " .
-        "user=postgres " .
-        "password=1234"
-    );
+if (!$conn) {
+    die("Erreur de connexion à la base de données");
 }
-
-// Vérification de la connexion
+?>
 if (!$conn) {
     die("Erreur de connexion à la base de données.");
 }
