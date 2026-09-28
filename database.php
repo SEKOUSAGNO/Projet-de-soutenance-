@@ -1,15 +1,16 @@
 <?php
 
 $host = getenv('DB_HOST');
-$port = getenv('DB_PORT');
+$port = getenv('DB_PORT') ?: '5432';
 $dbname = getenv('DB_NAME');
 $user = getenv('DB_USER');
+$password = getenv('DB_PASSWORD');
 
-echo "<h2>Test des variables Render</h2>";
-echo "DB_HOST = [" . htmlspecialchars($host ?? 'NULL') . "]<br>";
-echo "DB_PORT = [" . htmlspecialchars($port ?? 'NULL') . "]<br>";
-echo "DB_NAME = [" . htmlspecialchars($dbname ?? 'NULL') . "]<br>";
-echo "DB_USER = [" . htmlspecialchars($user ?? 'NULL') . "]<br>";
+$conn = pg_connect(
+    "host=$host port=$port dbname=$dbname user=$user password=$password"
+);
 
-exit;
+if (!$conn) {
+    die("Erreur de connexion à la base de données.");
+}
 ?>
