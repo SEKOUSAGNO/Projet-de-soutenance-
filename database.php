@@ -14,8 +14,3 @@ if (!$conn) {
     die("Erreur de connexion à la base de données");
 }
 ?>
-if (!$conn) {
-    die("Erreur de connexion à la base de données.");
-}
-
-?>
