@@ -1,28 +1,34 @@
 FROM php:8.2-apache
 
-# Activer mod_rewrite
+# Installer les dépendances PostgreSQL
+RUN apt-get update \
+    && apt-get install -y libpq-dev \
+    && docker-php-ext-install pgsql pdo_pgsql \
+    && rm -rf /var/lib/apt/lists/*
+
+# Activer le module rewrite d'Apache
 RUN a2enmod rewrite
 
-# Autoriser .htaccess et définir inscription.php comme page d'accueil
-RUN printf '%s\n' \
-'<Directory /var/www/html>' \
-'    AllowOverride All' \
-'    Require all granted' \
-'</Directory>' \
-'DirectoryIndex inscription.php index.php index.html' \
-> /etc/apache2/conf-available/siman-job.conf
+# Configuration Apache
+RUN printf '<Directory /var/www/html>\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>\n' > /etc/apache2/conf-available/siman-job.conf
 
-# Activer la configuration Apache
 RUN a2enconf siman-job
 
-# Définir le dossier de travail
+# Répertoire de travail
 WORKDIR /var/www/html
 
-# Copier le projet dans Apache
+# Copier les fichiers du projet
 COPY . /var/www/html
 
-# Donner les bonnes permissions
+# Donner les droits à Apache
 RUN chown -R www-data:www-data /var/www/html
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]
 
 # Port Apache
 EXPOSE 80
