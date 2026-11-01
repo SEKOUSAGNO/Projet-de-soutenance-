@@ -1,6 +1,4 @@
-
 <?php
-
 // 1. Récupération de l'URL PostgreSQL de Render
 $databaseUrl = getenv('DATABASE_URL');
 
