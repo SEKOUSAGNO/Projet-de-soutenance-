@@ -1,9 +1,7 @@
 <?php
-
 session_start();
 
 require_once("../database.php");
-
 
 // =======================================
 // VERIFICATION ADMIN
@@ -15,8 +13,6 @@ if(!isset($_SESSION['id']) || $_SESSION['role']!="Admin"){
     exit();
 
 }
-
-
 
 // =======================================
 // IDENTIFIER LE TYPE ADMINISTRATEUR
